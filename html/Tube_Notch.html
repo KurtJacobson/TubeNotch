@@ -1,0 +1,1399 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Tube_Notch</title><meta name="generator" content="MATLAB 8.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-12-06"><meta name="DC.source" content="Tube_Notch.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">Getting Inputs from Tube Notch GUI</a></li><li><a href="#3">Calculating Joint Profile and Generating G-code</a></li><li><a href="#5">Saving G-code as .txt</a></li><li><a href="#6">Previewing the Template</a></li><li><a href="#7">Saving Template as Accurately Scaled PDF</a></li><li><a href="#8">Keeping the Window on Top</a></li><li><a href="#9">About and Help windows</a></li><li><a href="#10">Input Unit System Selection</a></li><li><a href="#11">Miscellaneous Functions and Callbacks</a></li></ul></div><pre class="codeinput"><span class="keyword">function</span> varargout = Tube_Notch(varargin)
+<span class="comment">% TUBE_NOTCH MATLAB code for Tube_Notch.fig</span>
+<span class="comment">%      TUBE_NOTCH, by itself, creates a new TUBE_NOTCH or raises the existing</span>
+<span class="comment">%      singleton*.</span>
+
+<span class="comment">% Begin initialization code - DOin NOT EDIT</span>
+gui_Singleton = 1;
+gui_State = struct(<span class="string">'gui_Name'</span>,       mfilename, <span class="keyword">...</span>
+    <span class="string">'gui_Singleton'</span>,  gui_Singleton, <span class="keyword">...</span>
+    <span class="string">'gui_OpeningFcn'</span>, @Tube_Notch_OpeningFcn, <span class="keyword">...</span>
+    <span class="string">'gui_OutputFcn'</span>,  @Tube_Notch_OutputFcn, <span class="keyword">...</span>
+    <span class="string">'gui_LayoutFcn'</span>,  [] , <span class="keyword">...</span>
+    <span class="string">'gui_Callback'</span>,   []);
+
+<span class="keyword">if</span> nargin &amp;&amp; ischar(varargin{1})
+    gui_State.gui_Callback = str2func(varargin{1});
+<span class="keyword">end</span>
+
+<span class="keyword">if</span> nargout
+    [varargout{1:nargout}] = gui_mainfcn(gui_State, varargin{:});
+<span class="keyword">else</span>
+    gui_mainfcn(gui_State, varargin{:});
+<span class="keyword">end</span>
+<span class="comment">% End initialization code - DOin NOT EDIT</span>
+
+<span class="keyword">end</span>
+
+
+<span class="comment">% Executes just before Tube_Notch is made visible.</span>
+<span class="keyword">function</span> Tube_Notch_OpeningFcn(hObject, eventdata, handles, varargin)
+
+<span class="comment">% Choose default command line output for Tube_Notch</span>
+handles.output = hObject;
+
+<span class="comment">% Update handles structure</span>
+guidata(hObject, handles);
+
+set(handles.unit,<span class="string">'String'</span>,<span class="string">'in'</span>) <span class="comment">% Defalts units to inches</span>
+
+handles.DU = str2double(get(handles.DUin,<span class="string">'String'</span>));
+handles.DO = str2double(get(handles.DOin,<span class="string">'String'</span>));
+handles.TH = str2double(get(handles.THin,<span class="string">'String'</span>));
+
+calc_Callback(handles.calc, eventdata,handles); <span class="comment">% Calculates at startup</span>
+uicontrol(handles.AF);  <span class="comment">% Sets curser to *Angle of Fit* editbox</span>
+
+<span class="comment">% Puts link to MATLAB code on GUI</span>
+labelStr = <span class="string">'&lt;html&gt;&lt;center&gt;&lt;a href=""&gt;Tube Notch'</span>;
+cbStr = <span class="string">'web(''http://tptn.weebly.com/tube-notch.html'');'</span>;
+hButton = uicontrol(<span class="string">'string'</span>,labelStr,<span class="string">'pos'</span>,[350,340,70,20],<span class="string">'callback'</span>,cbStr);
+jButton = findjobj(hButton); <span class="comment">% get FindJObj from the File Exchange</span>
+jButton.setCursor(java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+jButton.setContentAreaFilled(0); <span class="comment">% or: jButton.setBorder([]);</span>
+
+<span class="keyword">end</span>
+
+
+<span class="comment">% Outputs from this function are returned to the command line.</span>
+<span class="keyword">function</span> varargout = Tube_Notch_OutputFcn(hObject, eventdata, handles)
+
+WinOnTop(gcf); <span class="comment">% Defalts window to stay in top</span>
+
+clc
+
+<span class="keyword">end</span>
+</pre><h2>Getting Inputs from Tube Notch GUI<a name="2"></a></h2><p>These functions get the inputs for the GUI and make any necessary conversions between units.  They also provide error messages indicating invalid or out-of-range inputs.</p><pre class="codeinput"><span class="keyword">function</span> AF_Callback(hObject, eventdata, handles)
+
+AF = str2double(get(handles.AF,<span class="string">'String'</span>));
+
+<span class="keyword">if</span> AF &lt; 10 || AF &gt; 90
+    error = <span class="string">'ERROR: Angle of fit must be between 10&deg; and 90&deg;.'</span>;
+    set(handles.error, <span class="string">'String'</span>, error)
+    set(hObject,<span class="string">'foregroundcolor'</span>,[1 0 0])
+    set(handles.code_disp,<span class="string">'String'</span>, <span class="string">'    *******ERROR*******'</span>);
+
+<span class="keyword">else</span>
+    set(hObject,<span class="string">'foregroundcolor'</span>,[0 0 0])
+    set(handles.error, <span class="string">'String'</span>, <span class="string">' '</span>)
+    calc_Callback(handles.calc, eventdata,handles);
+
+<span class="keyword">end</span>
+
+uicontrol(handles.DUin);
+
+<span class="keyword">end</span>
+
+
+<span class="keyword">function</span> DUin_Callback(hObject, eventdata, handles)
+
+<span class="keyword">if</span> get(handles.SI,<span class="string">'Value'</span>)==1
+    DU = str2double(get(handles.DUin,<span class="string">'String'</span>))/25.4;
+    DO = str2double(get(handles.DOin,<span class="string">'String'</span>))/25.4;
+<span class="keyword">else</span>
+    DU = str2double(get(handles.DUin,<span class="string">'String'</span>));
+    DO = str2double(get(handles.DOin,<span class="string">'String'</span>));
+<span class="keyword">end</span>
+
+handles.DU = DU;
+handles.DO = DO;
+
+
+<span class="keyword">if</span> DO &gt; DU
+    error = <span class="string">'ERROR: Diameter of cut tube can''t be greater than uncut tube.'</span>;
+    set(handles.error, <span class="string">'String'</span>, error)
+    set(hObject,<span class="string">'foregroundcolor'</span>,[1 0 0])
+    set(handles.code_disp,<span class="string">'String'</span>, <span class="string">'    *******ERROR*******'</span>);
+
+<span class="keyword">elseif</span> DU &gt; 4
+    error = <span class="string">'ERROR: Diameter of tube can''t be greater than 4''.'</span>;
+    set(handles.error, <span class="string">'String'</span>, error)
+    set(hObject,<span class="string">'foregroundcolor'</span>,[1 0 0])
+    set(handles.code_disp,<span class="string">'String'</span>, <span class="string">'    *******ERROR*******'</span>);
+
+<span class="keyword">else</span>
+    set(handles.error, <span class="string">'String'</span>, <span class="string">' '</span>)
+    set(handles.DUin,<span class="string">'foregroundcolor'</span>,[0 0 0])
+    set(handles.DOin,<span class="string">'foregroundcolor'</span>,[0 0 0])
+    calc_Callback(handles.calc, eventdata,handles);
+
+<span class="keyword">end</span>
+
+uicontrol(handles.DOin);
+
+<span class="keyword">end</span>
+
+
+
+<span class="keyword">function</span> DOin_Callback(hObject, eventdata, handles)
+
+<span class="keyword">if</span> get(handles.SI,<span class="string">'Value'</span>)==1
+    DU = str2double(get(handles.DUin,<span class="string">'String'</span>))/25.4;
+    DO = str2double(get(handles.DOin,<span class="string">'String'</span>))/25.4;
+
+<span class="keyword">elseif</span> get(handles.US,<span class="string">'Value'</span>)==1
+    DU = str2double(get(handles.DUin,<span class="string">'String'</span>));
+    DO = str2double(get(handles.DOin,<span class="string">'String'</span>));
+
+<span class="keyword">end</span>
+
+handles.DU = DU;
+handles.DO = DO;
+
+<span class="keyword">if</span> DO &gt; DU
+    error = <span class="string">'ERROR: Diameter of cut tube can''t be greater than uncut tube.'</span>;
+    set(handles.error, <span class="string">'String'</span>, error)
+    set(hObject,<span class="string">'foregroundcolor'</span>,[1 0 0])
+    set(handles.code_disp,<span class="string">'String'</span>, <span class="string">'    *******ERROR*******'</span>);
+
+<span class="keyword">elseif</span> DO &gt; 4
+    error = <span class="string">'ERROR: Diameter of tube can''t be greater than 4''.'</span>;
+    set(handles.error, <span class="string">'String'</span>, error)
+    set(hObject,<span class="string">'foregroundcolor'</span>,[1 0 0])
+    set(handles.code_disp,<span class="string">'String'</span>, <span class="string">'    *******ERROR*******'</span>);
+
+<span class="keyword">else</span>
+    set(handles.error, <span class="string">'String'</span>, <span class="string">' '</span>)
+    set(handles.DOin,<span class="string">'foregroundcolor'</span>,[0 0 0])
+    set(handles.DUin,<span class="string">'foregroundcolor'</span>,[0 0 0])
+    calc_Callback(handles.calc, eventdata,handles);
+
+<span class="keyword">end</span>
+
+uicontrol(handles.THin);
+
+<span class="keyword">end</span>
+
+
+
+<span class="keyword">function</span> THin_Callback(hObject, eventdata, handles)
+
+<span class="keyword">if</span> get(handles.SI,<span class="string">'Value'</span>)==1
+    TH = str2double(get(handles.THin,<span class="string">'String'</span>))/25.4;
+<span class="keyword">else</span>
+    TH = str2double(get(handles.THin,<span class="string">'String'</span>));
+<span class="keyword">end</span>
+
+handles.TH = TH;
+
+<span class="keyword">if</span> TH &lt; .05 || TH &gt; .375
+    error = <span class="string">'ERROR: Cut tube wall must be between .05'' and .375''.'</span>;
+    set(handles.error, <span class="string">'String'</span>, error)
+    set(hObject,<span class="string">'foregroundcolor'</span>,[1 0 0])
+    set(handles.code_disp,<span class="string">'String'</span>, <span class="string">'    *******ERROR*******'</span>);
+
+<span class="keyword">else</span>
+    set(handles.error, <span class="string">'String'</span>, <span class="string">' '</span>)
+    set(hObject,<span class="string">'foregroundcolor'</span>,[0 0 0])
+    calc_Callback(handles.calc, eventdata,handles);
+<span class="keyword">end</span>
+
+uicontrol(handles.calc);
+
+<span class="keyword">end</span>
+
+
+<span class="keyword">function</span> speed_Callback(hObject, eventdata, handles)
+
+s = str2double(get(handles.speed,<span class="string">'String'</span>));
+
+calc_Callback(handles.calc, eventdata,handles);
+
+<span class="keyword">if</span> s &lt; 0 || s &gt; 500
+    error = <span class="string">'ERROR: Cutting speed must be between 0 and 500 ipm.'</span>;
+    set(handles.error, <span class="string">'String'</span>, error)
+    set(hObject,<span class="string">'foregroundcolor'</span>,[1 0 0])
+
+<span class="keyword">else</span>
+    set(hObject,<span class="string">'foregroundcolor'</span>,[0 0 0])
+    set(handles.error, <span class="string">'String'</span>, <span class="string">' '</span>)
+
+<span class="keyword">end</span>
+
+<span class="keyword">end</span>
+
+
+<span class="keyword">function</span> pierce_Callback(hObject, eventdata, handles)
+
+P = str2double(get(handles.pierce,<span class="string">'String'</span>));
+
+calc_Callback(handles.calc, eventdata,handles);
+
+<span class="keyword">if</span> P &lt; 0 || P &gt; 30
+    error = <span class="string">'ERROR: Pierce delay must be between 0 and 30 s.'</span>;
+    set(handles.error, <span class="string">'String'</span>, error)
+    set(hObject,<span class="string">'foregroundcolor'</span>,[1 0 0])
+
+<span class="keyword">else</span>
+    set(hObject,<span class="string">'foregroundcolor'</span>,[0 0 0])
+    set(handles.error, <span class="string">'String'</span>, <span class="string">' '</span>)
+<span class="keyword">end</span>
+
+<span class="keyword">end</span>
+</pre><h2>Calculating Joint Profile and Generating G-code<a name="3"></a></h2><p>The code below is the heart of <b>Tube Notch</b>. It calculates the the Y-offset measured from the plane that is both perpendicular to the axis of the branch and coincident with the point defined by the intersection of the axes of the branch and header. The intersection of the outer surface of the branch with the header the Y-offset is given by:</p><p><img vspace="5" hspace="5" src="EQ.png" alt=""> </p><p>If ID is substituted for OD in the above equation, the Y-offset for the intersection of the inner surface of the branch with the header is obtained.</p><pre class="codeinput"><span class="comment">% Executes on button press in calc.</span>
+<span class="keyword">function</span> calc_Callback(hObject, eventdata, handles)
+
+existingFig = findobj(0,<span class="string">'Name'</span>, <span class="string">'Notching Template Preview'</span>);
+close(existingFig);
+
+
+<span class="comment">% input of joint and tube parameters</span>
+DU = handles.DU;
+RU = .5*DU; <span class="comment">% converts diameter to radius</span>
+DO = handles.DO;
+RO = .5*DO; <span class="comment">% converts diameter to radius</span>
+AF = str2double(get(handles.AF,<span class="string">'String'</span>));
+TH = handles.TH;
+RI = RO - TH; <span class="comment">% calculates inner radius of cut tube</span>
+unit1 = get(handles.unit, <span class="string">'String'</span>);
+unit = unit1{:};
+DUin = str2double(get(handles.DUin, <span class="string">'String'</span>));
+DOin = str2double(get(handles.DOin, <span class="string">'String'</span>));
+THin = str2double(get(handles.THin, <span class="string">'String'</span>));
+
+
+N = zeros(360,1); <span class="comment">% preallocates variable N to save time in loop</span>
+Y = zeros(360,1); <span class="comment">% preallocates variable Y to save time in loop</span>
+
+<span class="comment">% Calculates the Y-offset based on the intersection of the inner and outer</span>
+<span class="comment">% surfaces of the cut tube with the outer surface of the uncut tube and</span>
+<span class="comment">% takes the highest value</span>
+
+<span class="keyword">for</span> AR=1:360
+    YO = sqrt(RU^2-(RO*sind(AR)).^2) /sind(AF)- tand(90-AF)*RO*cosd(AR);
+    YI = sqrt(RU^2-(RI*sind(AR)).^2) /sind(AF)- tand(90-AF)*RI*cosd(AR);
+    N(AR) = AR;
+
+    <span class="keyword">if</span> YO&gt;YI;
+        Y(AR)=YO;
+    <span class="keyword">else</span>
+        Y(AR)=YI;
+    <span class="keyword">end</span>
+
+<span class="keyword">end</span>
+
+
+YO1 = sqrt(RU^2-(RO*sind(N)).^2) /sind(AF)- tand(90-AF)*RO*cosd(N);
+YI1 = sqrt(RU^2-(RI*sind(N)).^2) /sind(AF)- tand(90-AF)*RI*cosd(N);
+
+<span class="comment">% Stores data for use in other functions</span>
+handles.Y = Y;
+handles.N = N;
+handles.YO1 = YO1;
+handles.YI1 = YI1;
+guidata(hObject, handles)
+
+P = 1000 * str2double(get(handles.pierce,<span class="string">'String'</span>)); <span class="comment">% Pierce time in ms</span>
+F = str2double(get(handles.speed,<span class="string">'String'</span>));         <span class="comment">% Cutting speed</span>
+x = Y(360);                                          <span class="comment">% Starting pos. same as end</span>
+
+<span class="comment">% Print G-code to text file</span>
+fileID = fopen(<span class="string">'dat.txt'</span>, <span class="string">'w+'</span>);
+fprintf(fileID, <span class="string">'%%\r\n\r\n'</span>);
+fprintf(fileID, datestr(now,<span class="string">'(mm/dd/yyyy HH:MM AM)\r\n'</span>));
+fprintf(fileID, <span class="string">'(Uncut Tube OD: %g %s)\r\n'</span>,DUin, unit);
+fprintf(fileID, <span class="string">'(Cut Tube OD:   %g %s)\r\n'</span>,DOin, unit);
+fprintf(fileID, <span class="string">'(Angle of Fit:  %g&deg;)\r\n'</span>,AF);
+fprintf(fileID, <span class="string">'(Tubing Wall:   %g %s)\r\n\r\n'</span>,THin, unit);
+fprintf(fileID, <span class="string">'G00 A0 X%4.3f;\r\nM07;\r\nG04 P%.0f;\r\nG01 F%.0f;\r\n'</span>,x , P, F);
+
+<span class="keyword">for</span> AR = 1:360
+    fprintf(fileID,<span class="string">'A %-3.0f  X %3.3f;\r\n'</span>, AR, Y(AR));
+<span class="keyword">end</span>
+
+fprintf(fileID,<span class="string">'M05;\r\nG28;\r\nM30\r\n\r\n%%'</span>);
+fclose(fileID);
+
+<span class="comment">% Read the G-code written to text file</span>
+fid = fopen(<span class="string">'dat.txt'</span>,<span class="string">'r'</span>);
+code = textscan(fid,<span class="string">'%s'</span>,<span class="string">'delimiter'</span>,<span class="string">'\n'</span>);
+fclose(fid);
+
+<span class="comment">% Display G-code in listbox</span>
+set(handles.code_disp,<span class="string">'String'</span>,code{:});
+
+<span class="keyword">end</span>
+</pre><img vspace="5" hspace="5" src=" " alt=""> <h2>Saving G-code as .txt<a name="5"></a></h2><p>This function lets the user save G-code as ASCII text for use with Fanuc dialect machine tool controllers.  The function reads the dat.txt file generated by the <b>calc</b> function and lets the user save it with a different name and location.</p><pre class="codeinput"><span class="keyword">function</span> save_code_Callback(hObject, eventdata, handles)
+
+<span class="comment">% Opens G-code text file and reads data</span>
+fid = fopen(<span class="string">'dat.txt'</span>,<span class="string">'r'</span>);
+code = fread(fid);
+fclose(fid);
+
+<span class="comment">% Gets G-code destination location from user</span>
+[file,path] = uiputfile(<span class="string">'*.txt'</span>,<span class="string">'Save file name'</span>);
+
+<span class="keyword">if</span> isequal(file,0);  <span class="comment">% Prevents error if user cancels</span>
+    <span class="keyword">return</span>
+<span class="keyword">else</span>
+    fileID = fopen(fullfile(path, file),<span class="string">'w'</span>);  <span class="comment">% Opens destination location</span>
+    fwrite(fileID, code);                      <span class="comment">% and writes G-code to it</span>
+    fclose(fileID);
+
+    <span class="keyword">if</span> get(handles.open_code,<span class="string">'Value'</span>) == 1     <span class="comment">% Opens .txt if user selected</span>
+        winopen(fullfile(path, file));         <span class="comment">% checkbox to do so</span>
+    <span class="keyword">end</span>
+
+<span class="keyword">end</span>
+
+<span class="keyword">end</span>
+</pre><h2>Previewing the Template<a name="6"></a></h2><p>The code below generates a preview of the notching template.  The preview is scaled in aspect ratio, but should not be used for actual notching as screen resolution variations may cause scaling problems.</p><pre class="codeinput"><span class="keyword">function</span> view_temp_Callback(hObject, eventdata, handles)
+
+existingFig = findobj(0,<span class="string">'Name'</span>, <span class="string">'Notching Template Preview'</span>);
+close(existingFig);  <span class="comment">% Closes any previously generated template</span>
+
+
+YO1 = handles.YO1;
+YI1 = handles.YI1;
+N = handles.N;
+Y = handles.Y;
+DU = handles.DU;
+DO = handles.DO;
+AF = str2double(get(handles.AF,<span class="string">'String'</span>));
+TH = handles.TH;
+unit1 = get(handles.unit, <span class="string">'String'</span>);
+unit = unit1{:};
+DUin = str2double(get(handles.DUin, <span class="string">'String'</span>));
+DOin = str2double(get(handles.DOin, <span class="string">'String'</span>));
+THin = str2double(get(handles.THin, <span class="string">'String'</span>));
+
+<span class="comment">% plot Y, YO1 and YI1 as functions of angular rotation</span>
+
+
+hFig = figure;
+set(hFig ,<span class="string">'visible'</span>,<span class="string">'on'</span>)
+set(hFig, <span class="string">'Menubar'</span>,<span class="string">'none'</span>);
+set(hFig ,<span class="string">'name'</span>,<span class="string">'Notching Template Preview'</span>,<span class="string">'numbertitle'</span>,<span class="string">'off'</span>)
+set(hFig, <span class="string">'resize'</span>, <span class="string">'off'</span>);
+
+<span class="comment">% hFig = figure('Menubar','none');</span>
+hold <span class="string">on</span>;
+grid <span class="string">on</span>;
+YOplot = plot(N,YO1,<span class="string">'k--'</span>);
+YIplot = plot(N,YI1,<span class="string">'k--'</span>);
+Yplot = plot (N,Y, <span class="string">'k-'</span>); axis([0,360,0,inf]);
+set(YIplot, <span class="string">'color'</span>, [0.5 0.5 0.5])
+set(Yplot,<span class="string">'LineWidth'</span>,1);
+set(YOplot, <span class="string">'color'</span>, [0.5 0.5 0.5])
+set (gca, <span class="string">'XTick'</span>, 0:45:360)
+box
+
+annotation(<span class="string">'textbox'</span>,<span class="keyword">...</span>
+    [0.03 0.75 0.5 0.15],<span class="keyword">...</span>
+    <span class="string">'String'</span>,{<span class="string">'Tube notching template for:'</span>, <span class="keyword">...</span>
+    [<span class="string">'Uncut tube OD: '</span> num2str( DUin), unit],<span class="keyword">...</span>
+    [<span class="string">'Cut Tube OD:   '</span> num2str( DOin), unit],<span class="keyword">...</span>
+    [<span class="string">'Cut tube wall: '</span> num2str( THin), unit],<span class="keyword">...</span>
+    [<span class="string">'Angle of fit:  '</span> num2str( AF),<span class="string">'&deg;'</span>],<span class="keyword">...</span>
+    [<span class="string">'Created: '</span> datestr(now,<span class="string">'mm/dd/yyyy HH:MM AM\n'</span>)]}, <span class="keyword">...</span>
+    <span class="string">'FontSize'</span>,10,<span class="keyword">...</span>
+    <span class="string">'FontName'</span>,<span class="string">'Lucida Console'</span>,<span class="keyword">...</span>
+    <span class="string">'EdgeColor'</span>,<span class="string">'none'</span>,<span class="keyword">...</span>
+    <span class="string">'BackgroundColor'</span>,<span class="string">'none'</span>,<span class="keyword">...</span>
+    <span class="string">'Color'</span>,[0 0 0]);
+
+hold <span class="string">off</span>;
+
+set(gca, <span class="string">'XTickLabel'</span>,[], <span class="string">'YTickLabel'</span>,[], <span class="keyword">...</span>
+    <span class="string">'Units'</span>,<span class="string">'normalized'</span>, <span class="string">'Position'</span>,[0 0 1 1])
+
+<span class="comment">% units are in inches</span>
+xSize = DO*pi;             <span class="comment">% figure size on paper (width)</span>
+ySize = max(Y);            <span class="comment">% figure size on paper (height)</span>
+xMargin = .25;             <span class="comment">% left/right margins from page borders</span>
+yMargin = .25;             <span class="comment">% top/bottom margins from page borders</span>
+x = xSize + 2*xMargin;     <span class="comment">% paper size</span>
+y = ySize + 2*yMargin;     <span class="comment">% paper size</span>
+
+<span class="comment">% set figure size and aspect ratio displayed on screen</span>
+set(hFig, <span class="string">'Units'</span>,<span class="string">'inches'</span>, <span class="string">'Position'</span>,[0 0 xSize ySize])
+movegui(hFig, <span class="string">'center'</span>)
+
+<span class="keyword">if</span>  get(handles.top,<span class="string">'Value'</span>) == 1
+    WinOnTop(hFig);
+<span class="keyword">else</span>
+    WinOnTop(hFig, false);
+<span class="keyword">end</span>
+
+<span class="keyword">end</span>
+</pre><h2>Saving Template as Accurately Scaled PDF<a name="7"></a></h2><p>The following code plots the cut path and prints it to a PDF that is scaled so that if it is wrapped around a tube it will provide a very accurate template for use with the line scanning function on the Tracing Plasma Tubing Notcher.  The templates can also be used for hand notching.</p><pre class="codeinput"><span class="keyword">function</span> save_temp_Callback(hObject, eventdata, handles)
+
+existingFig = findobj(0,<span class="string">'Name'</span>, <span class="string">'Notching Template Preview'</span>);
+close(existingFig);  <span class="comment">% Closes any preexisting template</span>
+
+<span class="comment">% Gets the data needed to generate template</span>
+YO1 = handles.YO1;
+YI1 = handles.YI1;
+N = handles.N;
+Y = handles.Y;
+DU = handles.DU;
+DO = handles.DO;
+AF = str2double(get(handles.AF,<span class="string">'String'</span>));
+TH = handles.TH;
+unit1 = get(handles.unit, <span class="string">'String'</span>);
+unit = unit1{:};
+DUin = str2double(get(handles.DUin, <span class="string">'String'</span>));
+DOin = str2double(get(handles.DOin, <span class="string">'String'</span>));
+THin = str2double(get(handles.THin, <span class="string">'String'</span>));
+
+
+<span class="comment">% plot Y, YO1 and YI1 as functions of angular rotation</span>
+
+hFig = figure;
+set(hFig ,<span class="string">'visible'</span>,<span class="string">'off'</span>)
+set(hFig, <span class="string">'Menubar'</span>,<span class="string">'none'</span>);
+set(hFig ,<span class="string">'name'</span>,<span class="string">'Template'</span>,<span class="string">'numbertitle'</span>,<span class="string">'off'</span>)
+hold <span class="string">on</span>;
+grid <span class="string">on</span>
+YOplot = plot(N,YO1,<span class="string">'k--'</span>);
+YIplot = plot(N,YI1,<span class="string">'k--'</span>);
+Yplot = plot (N,Y, <span class="string">'k-'</span>); axis([0,360,0,inf]);
+set(YIplot, <span class="string">'color'</span>, [0.5 0.5 0.5])
+set(Yplot,<span class="string">'LineWidth'</span>,1);
+set(YOplot, <span class="string">'color'</span>, [0.5 0.5 0.5])
+set (gca, <span class="string">'XTick'</span>, 0:45:360)
+box
+
+<span class="comment">% Prints template information to figure</span>
+annotation(<span class="string">'textbox'</span>,<span class="keyword">...</span>
+    [0.03 0.75 0.5 0.15],<span class="keyword">...</span>
+    <span class="string">'String'</span>,{<span class="string">'Tube notching template for:'</span>, <span class="keyword">...</span>
+    [<span class="string">'Uncut tube OD: '</span> num2str( DUin), unit],<span class="keyword">...</span>
+    [<span class="string">'Cut Tube OD:   '</span> num2str( DOin), unit],<span class="keyword">...</span>
+    [<span class="string">'Cut tube wall: '</span> num2str( THin), unit],<span class="keyword">...</span>
+    [<span class="string">'Angle of fit:  '</span> num2str( AF),<span class="string">'&deg;'</span>],<span class="keyword">...</span>
+    [<span class="string">'Created: '</span> datestr(now,<span class="string">'mm/dd/yyyy HH:MM AM\n'</span>)]}, <span class="keyword">...</span>
+    <span class="string">'FontSize'</span>,10,<span class="keyword">...</span>
+    <span class="string">'FontName'</span>,<span class="string">'Lucida Console'</span>,<span class="keyword">...</span>
+    <span class="string">'EdgeColor'</span>,<span class="string">'none'</span>,<span class="keyword">...</span>
+    <span class="string">'BackgroundColor'</span>,<span class="string">'none'</span>,<span class="keyword">...</span>
+    <span class="string">'Color'</span>,[0 0 0]);
+
+hold <span class="string">off</span>;
+set(gca, <span class="string">'XTickLabel'</span>,[], <span class="string">'YTickLabel'</span>,[], <span class="keyword">...</span>
+    <span class="string">'Units'</span>,<span class="string">'normalized'</span>, <span class="string">'Position'</span>,[0 0 1 1])
+
+<span class="comment">% units are in inches</span>
+xSize = DO*pi;             <span class="comment">% figure size on paper (width)</span>
+ySize = max(Y);            <span class="comment">% figure size on paper (height)</span>
+xMargin = .25;             <span class="comment">% left/right margins from page borders</span>
+yMargin = .25;             <span class="comment">% top/bottom margins from page borders</span>
+x = xSize + 2*xMargin;     <span class="comment">% paper size</span>
+y = ySize + 2*yMargin;     <span class="comment">% paper size</span>
+
+<span class="comment">% set figure size and aspect ratio displayed on screen</span>
+set(hFig, <span class="string">'Units'</span>,<span class="string">'inches'</span>, <span class="string">'Position'</span>,[0 0 xSize ySize])
+movegui(hFig, <span class="string">'center'</span>)
+
+<span class="comment">% scale figure size for printing as template</span>
+set(hFig, <span class="string">'PaperUnits'</span>,<span class="string">'inches'</span>)
+set(hFig, <span class="string">'PaperSize'</span>,[x y])
+set(hFig, <span class="string">'PaperPosition'</span>,[xMargin yMargin xSize ySize])
+set(hFig, <span class="string">'PaperOrientation'</span>,<span class="string">'portrait'</span>)
+
+<span class="comment">% export template to PDF</span>
+
+[file,path] = uiputfile(<span class="string">'*.pdf'</span>,<span class="string">'Save Template'</span>);
+
+<span class="keyword">if</span> isequal(file,0);
+    <span class="keyword">return</span>
+<span class="keyword">else</span>
+    print(hFig,<span class="string">'-dpdf'</span>, fullfile(path, file));
+<span class="keyword">end</span>
+
+<span class="keyword">if</span>  get(handles.open_temp,<span class="string">'Value'</span>) == 1  <span class="comment">% Opens template PDF if user</span>
+    winopen(fullfile(path, file));       <span class="comment">% selected checkbox to do so</span>
+<span class="keyword">end</span>
+
+<span class="keyword">end</span>
+</pre><h2>Keeping the Window on Top<a name="8"></a></h2><p>Since <b>Tube Notch</b> will be used extensively with MACH3 motion control software, it is highly desirable that the GUI window remain on top even if it does not have focus.  By default <b>Tube Notch</b> uses WinOnTop to manipulate the window's Java script so that the GUI window stays on top.  The user can return to normal window behavior by unchecking the "Stay on Top" checkbox.</p><pre class="codeinput"><span class="keyword">function</span> top_Callback(hObject, eventdata, handles)
+
+<span class="keyword">if</span>  get(handles.top,<span class="string">'Value'</span>) == 1
+    WinOnTop(gcf);
+<span class="keyword">else</span>
+    WinOnTop(gcf, false);
+<span class="keyword">end</span>
+
+<span class="keyword">end</span>
+</pre><h2>About and Help windows<a name="9"></a></h2><pre class="codeinput"><span class="comment">% Executes on button press in help.</span>
+<span class="keyword">function</span> help_Callback(hObject, eventdata, handles)
+
+existingFig = findobj(0,<span class="string">'Name'</span>, <span class="string">'Tube Notch Help'</span>);
+close(existingFig);
+helpFig = figure;
+set(helpFig ,<span class="string">'visible'</span>,<span class="string">'on'</span>)
+set(helpFig, <span class="string">'Menubar'</span>,<span class="string">'none'</span>);
+set(helpFig ,<span class="string">'name'</span>,<span class="string">'Tube Notch Help'</span>,<span class="string">'numbertitle'</span>,<span class="string">'off'</span>)
+set(helpFig, <span class="string">'resize'</span>, <span class="string">'off'</span>);
+imshow(<span class="string">'Help.jpg'</span>,<span class="string">'Border'</span>,<span class="string">'tight'</span>)
+
+<span class="keyword">if</span>  get(handles.top,<span class="string">'Value'</span>) == 1
+    WinOnTop(helpFig);
+<span class="keyword">else</span>
+    WinOnTop(helpFig, false);
+<span class="keyword">end</span>
+
+<span class="keyword">end</span>
+
+
+<span class="comment">% Executes on button press in about.</span>
+<span class="keyword">function</span> about_Callback(hObject, eventdata, handles)
+
+existingFig = findobj(0,<span class="string">'Name'</span>, <span class="string">'About Tube Notch'</span>);
+close(existingFig);
+aboutFig = figure;
+set(aboutFig ,<span class="string">'visible'</span>,<span class="string">'on'</span>)
+set(aboutFig, <span class="string">'Menubar'</span>,<span class="string">'none'</span>);
+set(aboutFig ,<span class="string">'name'</span>,<span class="string">'About Tube Notch'</span>,<span class="string">'numbertitle'</span>,<span class="string">'off'</span>)
+set(aboutFig, <span class="string">'resize'</span>, <span class="string">'off'</span>);
+imshow(<span class="string">'About.jpg'</span>,<span class="string">'Border'</span>,<span class="string">'tight'</span>)
+
+<span class="keyword">if</span>  get(handles.top,<span class="string">'Value'</span>) == 1
+    WinOnTop(aboutFig);
+<span class="keyword">else</span>
+    WinOnTop(aboutFig, false);
+<span class="keyword">end</span>
+
+<span class="keyword">end</span>
+</pre><h2>Input Unit System Selection<a name="10"></a></h2><p><b>Tube Notch</b> allows the user to enter the joint parameters in either US or SI units. Values in the input boxes will be converted from US to SI or vice versa depending on the state of the radio buttons. Output G-code will be in US customary units regardless of the input unit system.</p><pre class="codeinput"><span class="keyword">function</span> US_Callback(hObject, eventdata, handles)
+
+<span class="keyword">if</span> get(handles.US,<span class="string">'Value'</span>) == 1
+    set(handles.unit,<span class="string">'String'</span>,<span class="string">'in'</span>)
+
+    DU = str2double(get(handles.DUin,<span class="string">'String'</span>))/25.4;
+    DO = str2double(get(handles.DOin,<span class="string">'String'</span>))/25.4;
+    TH = str2double(get(handles.THin,<span class="string">'String'</span>))/25.4;
+
+    set(handles.DUin,<span class="string">'String'</span>, num2str(DU));
+    set(handles.DOin,<span class="string">'String'</span>, num2str(DO));
+    set(handles.THin,<span class="string">'String'</span>, num2str(TH));
+
+    calc_Callback(handles.calc, eventdata,handles);
+
+<span class="keyword">end</span>
+
+<span class="keyword">end</span>
+
+
+<span class="comment">% --- Executes on button press in SI.</span>
+<span class="keyword">function</span> SI_Callback(hObject, eventdata, handles)
+
+<span class="keyword">if</span> get(handles.SI,<span class="string">'Value'</span>)==1
+    set(handles.unit,<span class="string">'String'</span>,<span class="string">'mm'</span>)
+
+    <span class="comment">% Gets current *in* value and converts to *mm*</span>
+    DU = str2double(get(handles.DUin,<span class="string">'String'</span>))*25.4;
+    DO = str2double(get(handles.DOin,<span class="string">'String'</span>))*25.4;
+    TH = str2double(get(handles.THin,<span class="string">'String'</span>))*25.4;
+
+    <span class="comment">% Replaces values in edit boxes with converted values</span>
+    set(handles.DUin,<span class="string">'String'</span>, num2str(DU));
+    set(handles.DOin,<span class="string">'String'</span>, num2str(DO));
+    set(handles.THin,<span class="string">'String'</span>, num2str(TH));
+
+    calc_Callback(handles.calc, eventdata,handles);
+<span class="keyword">end</span>
+
+<span class="keyword">end</span>
+</pre><h2>Miscellaneous Functions and Callbacks<a name="11"></a></h2><pre class="codeinput"><span class="comment">% Executes on button press in open_code.</span>
+<span class="keyword">function</span> open_code_Callback(hObject, eventdata, handles)
+
+<span class="keyword">end</span>
+
+<span class="comment">% Executes on button press in open_temp.</span>
+<span class="keyword">function</span> open_temp_Callback(hObject, eventdata, handles)
+
+<span class="keyword">end</span>
+
+<span class="comment">% Executes during object creation, after setting all properties.</span>
+<span class="keyword">function</span> code_disp_CreateFcn(hObject, eventdata, handles)
+
+<span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+    set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+<span class="keyword">end</span>
+
+<span class="keyword">end</span>
+
+<span class="comment">% Executes on selection change in code_disp.</span>
+<span class="keyword">function</span> code_disp_Callback(hObject, eventdata, handles)
+
+<span class="keyword">end</span>
+
+<span class="comment">% Executes during object creation, after setting all properties.</span>
+<span class="keyword">function</span> error_CreateFcn(hObject, eventdata, handles)
+
+<span class="keyword">end</span>
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+function varargout = Tube_Notch(varargin)
+% TUBE_NOTCH MATLAB code for Tube_Notch.fig
+%      TUBE_NOTCH, by itself, creates a new TUBE_NOTCH or raises the existing
+%      singleton*.
+
+% Begin initialization code - DOin NOT EDIT
+gui_Singleton = 1;
+gui_State = struct('gui_Name',       mfilename, ...
+    'gui_Singleton',  gui_Singleton, ...
+    'gui_OpeningFcn', @Tube_Notch_OpeningFcn, ...
+    'gui_OutputFcn',  @Tube_Notch_OutputFcn, ...
+    'gui_LayoutFcn',  [] , ...
+    'gui_Callback',   []);
+
+if nargin && ischar(varargin{1})
+    gui_State.gui_Callback = str2func(varargin{1});
+end
+
+if nargout
+    [varargout{1:nargout}] = gui_mainfcn(gui_State, varargin{:});
+else
+    gui_mainfcn(gui_State, varargin{:});
+end
+% End initialization code - DOin NOT EDIT
+
+end
+
+
+% Executes just before Tube_Notch is made visible.
+function Tube_Notch_OpeningFcn(hObject, eventdata, handles, varargin)
+
+% Choose default command line output for Tube_Notch
+handles.output = hObject;
+
+% Update handles structure
+guidata(hObject, handles);
+
+set(handles.unit,'String','in') % Defalts units to inches
+
+handles.DU = str2double(get(handles.DUin,'String'));
+handles.DO = str2double(get(handles.DOin,'String')); 
+handles.TH = str2double(get(handles.THin,'String')); 
+
+calc_Callback(handles.calc, eventdata,handles); % Calculates at startup
+uicontrol(handles.AF);  % Sets curser to *Angle of Fit* editbox
+
+% Puts link to MATLAB code on GUI
+labelStr = '<html><center><a href="">Tube Notch';
+cbStr = 'web(''http://tptn.weebly.com/tube-notch.html'');';
+hButton = uicontrol('string',labelStr,'pos',[350,340,70,20],'callback',cbStr);
+jButton = findjobj(hButton); % get FindJObj from the File Exchange
+jButton.setCursor(java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+jButton.setContentAreaFilled(0); % or: jButton.setBorder([]);
+
+end
+
+
+% Outputs from this function are returned to the command line.
+function varargout = Tube_Notch_OutputFcn(hObject, eventdata, handles)
+
+WinOnTop(gcf); % Defalts window to stay in top 
+
+clc
+
+end
+
+
+
+%% Getting Inputs from Tube Notch GUI
+% These functions get the inputs for the GUI and make any necessary
+% conversions between units.  They also provide error messages indicating
+% invalid or out-of-range inputs.
+
+
+function AF_Callback(hObject, eventdata, handles)
+
+AF = str2double(get(handles.AF,'String'));
+
+if AF < 10 || AF > 90
+    error = 'ERROR: Angle of fit must be between 10° and 90°.';
+    set(handles.error, 'String', error)
+    set(hObject,'foregroundcolor',[1 0 0])
+    set(handles.code_disp,'String', '    *******ERROR*******');
+     
+else
+    set(hObject,'foregroundcolor',[0 0 0])
+    set(handles.error, 'String', ' ')
+    calc_Callback(handles.calc, eventdata,handles);
+    
+end
+
+uicontrol(handles.DUin);
+
+end
+
+
+function DUin_Callback(hObject, eventdata, handles)
+
+if get(handles.SI,'Value')==1
+    DU = str2double(get(handles.DUin,'String'))/25.4;
+    DO = str2double(get(handles.DOin,'String'))/25.4;
+else
+    DU = str2double(get(handles.DUin,'String'));
+    DO = str2double(get(handles.DOin,'String')); 
+end
+
+handles.DU = DU;
+handles.DO = DO;
+
+
+if DO > DU
+    error = 'ERROR: Diameter of cut tube can''t be greater than uncut tube.';
+    set(handles.error, 'String', error)
+    set(hObject,'foregroundcolor',[1 0 0])
+    set(handles.code_disp,'String', '    *******ERROR*******');
+    
+elseif DU > 4
+    error = 'ERROR: Diameter of tube can''t be greater than 4''.';
+    set(handles.error, 'String', error)
+    set(hObject,'foregroundcolor',[1 0 0])
+    set(handles.code_disp,'String', '    *******ERROR*******');
+    
+else
+    set(handles.error, 'String', ' ')
+    set(handles.DUin,'foregroundcolor',[0 0 0])
+    set(handles.DOin,'foregroundcolor',[0 0 0])
+    calc_Callback(handles.calc, eventdata,handles);
+    
+end
+
+uicontrol(handles.DOin);
+
+end
+
+
+
+function DOin_Callback(hObject, eventdata, handles)
+
+if get(handles.SI,'Value')==1
+    DU = str2double(get(handles.DUin,'String'))/25.4;
+    DO = str2double(get(handles.DOin,'String'))/25.4;
+    
+elseif get(handles.US,'Value')==1
+    DU = str2double(get(handles.DUin,'String'));
+    DO = str2double(get(handles.DOin,'String')); 
+    
+end
+
+handles.DU = DU;
+handles.DO = DO;
+
+if DO > DU
+    error = 'ERROR: Diameter of cut tube can''t be greater than uncut tube.';
+    set(handles.error, 'String', error)
+    set(hObject,'foregroundcolor',[1 0 0])
+    set(handles.code_disp,'String', '    *******ERROR*******');
+    
+elseif DO > 4
+    error = 'ERROR: Diameter of tube can''t be greater than 4''.';
+    set(handles.error, 'String', error)
+    set(hObject,'foregroundcolor',[1 0 0])
+    set(handles.code_disp,'String', '    *******ERROR*******');
+    
+else
+    set(handles.error, 'String', ' ')
+    set(handles.DOin,'foregroundcolor',[0 0 0])
+    set(handles.DUin,'foregroundcolor',[0 0 0])
+    calc_Callback(handles.calc, eventdata,handles);
+    
+end
+
+uicontrol(handles.THin);
+
+end
+
+
+
+function THin_Callback(hObject, eventdata, handles)
+
+if get(handles.SI,'Value')==1
+    TH = str2double(get(handles.THin,'String'))/25.4;
+else
+    TH = str2double(get(handles.THin,'String'));
+end
+
+handles.TH = TH;
+
+if TH < .05 || TH > .375
+    error = 'ERROR: Cut tube wall must be between .05'' and .375''.';
+    set(handles.error, 'String', error)
+    set(hObject,'foregroundcolor',[1 0 0])
+    set(handles.code_disp,'String', '    *******ERROR*******');
+    
+else
+    set(handles.error, 'String', ' ')
+    set(hObject,'foregroundcolor',[0 0 0])
+    calc_Callback(handles.calc, eventdata,handles);
+end
+
+uicontrol(handles.calc);
+
+end
+
+
+function speed_Callback(hObject, eventdata, handles)
+
+s = str2double(get(handles.speed,'String'));
+
+calc_Callback(handles.calc, eventdata,handles);
+
+if s < 0 || s > 500
+    error = 'ERROR: Cutting speed must be between 0 and 500 ipm.';
+    set(handles.error, 'String', error)
+    set(hObject,'foregroundcolor',[1 0 0])
+    
+else
+    set(hObject,'foregroundcolor',[0 0 0])
+    set(handles.error, 'String', ' ')
+    
+end
+
+end 
+
+
+function pierce_Callback(hObject, eventdata, handles)
+
+P = str2double(get(handles.pierce,'String'));
+
+calc_Callback(handles.calc, eventdata,handles);
+
+if P < 0 || P > 30
+    error = 'ERROR: Pierce delay must be between 0 and 30 s.';
+    set(handles.error, 'String', error)
+    set(hObject,'foregroundcolor',[1 0 0])
+    
+else
+    set(hObject,'foregroundcolor',[0 0 0])
+    set(handles.error, 'String', ' ')
+end
+
+end
+
+
+%% Calculating Joint Profile and Generating G-code
+% The code below is the heart of *Tube Notch*. It calculates the the Y-offset
+% measured from the plane that is both perpendicular to the axis of the
+% branch and coincident with the point defined by the intersection of
+% the axes of the branch and header. The intersection of the outer
+% surface of the branch with the header the Y-offset is given by: 
+% 
+% <<EQ.png>>
+%%
+% If ID is substituted for OD in the above equation, the Y-offset for the
+% intersection of the inner surface of the branch with the header is obtained.
+
+% Executes on button press in calc.
+function calc_Callback(hObject, eventdata, handles)
+
+existingFig = findobj(0,'Name', 'Notching Template Preview');
+close(existingFig);
+
+
+% input of joint and tube parameters
+DU = handles.DU;
+RU = .5*DU; % converts diameter to radius
+DO = handles.DO;
+RO = .5*DO; % converts diameter to radius
+AF = str2double(get(handles.AF,'String'));
+TH = handles.TH;
+RI = RO - TH; % calculates inner radius of cut tube
+unit1 = get(handles.unit, 'String');
+unit = unit1{:};
+DUin = str2double(get(handles.DUin, 'String'));
+DOin = str2double(get(handles.DOin, 'String'));
+THin = str2double(get(handles.THin, 'String'));
+
+
+N = zeros(360,1); % preallocates variable N to save time in loop
+Y = zeros(360,1); % preallocates variable Y to save time in loop
+
+% Calculates the Y-offset based on the intersection of the inner and outer
+% surfaces of the cut tube with the outer surface of the uncut tube and
+% takes the highest value
+
+for AR=1:360
+    YO = sqrt(RU^2-(RO*sind(AR)).^2) /sind(AF)- tand(90-AF)*RO*cosd(AR);
+    YI = sqrt(RU^2-(RI*sind(AR)).^2) /sind(AF)- tand(90-AF)*RI*cosd(AR);
+    N(AR) = AR;
+    
+    if YO>YI;
+        Y(AR)=YO;
+    else
+        Y(AR)=YI;
+    end
+    
+end
+
+
+YO1 = sqrt(RU^2-(RO*sind(N)).^2) /sind(AF)- tand(90-AF)*RO*cosd(N);
+YI1 = sqrt(RU^2-(RI*sind(N)).^2) /sind(AF)- tand(90-AF)*RI*cosd(N);
+
+% Stores data for use in other functions
+handles.Y = Y;
+handles.N = N;
+handles.YO1 = YO1;
+handles.YI1 = YI1;
+guidata(hObject, handles)
+
+P = 1000 * str2double(get(handles.pierce,'String')); % Pierce time in ms
+F = str2double(get(handles.speed,'String'));         % Cutting speed
+x = Y(360);                                          % Starting pos. same as end
+
+% Print G-code to text file
+fileID = fopen('dat.txt', 'w+');
+fprintf(fileID, '%%\r\n\r\n');
+fprintf(fileID, datestr(now,'(mm/dd/yyyy HH:MM AM)\r\n'));
+fprintf(fileID, '(Uncut Tube OD: %g %s)\r\n',DUin, unit);
+fprintf(fileID, '(Cut Tube OD:   %g %s)\r\n',DOin, unit);
+fprintf(fileID, '(Angle of Fit:  %g°)\r\n',AF);
+fprintf(fileID, '(Tubing Wall:   %g %s)\r\n\r\n',THin, unit);
+fprintf(fileID, 'G00 A0 X%4.3f;\r\nM07;\r\nG04 P%.0f;\r\nG01 F%.0f;\r\n',x , P, F);
+
+for AR = 1:360
+    fprintf(fileID,'A %-3.0f  X %3.3f;\r\n', AR, Y(AR));
+end
+
+fprintf(fileID,'M05;\r\nG28;\r\nM30\r\n\r\n%%');
+fclose(fileID);
+
+% Read the G-code written to text file
+fid = fopen('dat.txt','r');
+code = textscan(fid,'%s','delimiter','\n');
+fclose(fid);
+
+% Display G-code in listbox
+set(handles.code_disp,'String',code{:});
+
+end
+
+%% Saving G-code as .txt
+% This function lets the user save G-code as ASCII text for use with
+% Fanuc dialect machine tool controllers.  The function reads the dat.txt
+% file generated by the *calc* function and lets the user save it with a
+% different name and location.
+
+
+function save_code_Callback(hObject, eventdata, handles)
+
+% Opens G-code text file and reads data
+fid = fopen('dat.txt','r');
+code = fread(fid);
+fclose(fid);
+
+% Gets G-code destination location from user
+[file,path] = uiputfile('*.txt','Save file name');
+
+if isequal(file,0);  % Prevents error if user cancels
+    return
+else
+    fileID = fopen(fullfile(path, file),'w');  % Opens destination location
+    fwrite(fileID, code);                      % and writes G-code to it
+    fclose(fileID);
+    
+    if get(handles.open_code,'Value') == 1     % Opens .txt if user selected
+        winopen(fullfile(path, file));         % checkbox to do so
+    end
+    
+end
+
+end
+
+
+%% Previewing the Template
+% The code below generates a preview of the notching template.  The preview
+% is scaled in aspect ratio, but should not be used for actual notching as
+% screen resolution variations may cause scaling problems.
+
+
+function view_temp_Callback(hObject, eventdata, handles)
+
+existingFig = findobj(0,'Name', 'Notching Template Preview');
+close(existingFig);  % Closes any previously generated template
+
+
+YO1 = handles.YO1;
+YI1 = handles.YI1;
+N = handles.N;
+Y = handles.Y;
+DU = handles.DU;
+DO = handles.DO;
+AF = str2double(get(handles.AF,'String'));
+TH = handles.TH;
+unit1 = get(handles.unit, 'String');
+unit = unit1{:};
+DUin = str2double(get(handles.DUin, 'String'));
+DOin = str2double(get(handles.DOin, 'String'));
+THin = str2double(get(handles.THin, 'String'));
+
+% plot Y, YO1 and YI1 as functions of angular rotation
+
+
+hFig = figure;
+set(hFig ,'visible','on')
+set(hFig, 'Menubar','none');
+set(hFig ,'name','Notching Template Preview','numbertitle','off')
+set(hFig, 'resize', 'off');
+
+% hFig = figure('Menubar','none');
+hold on;
+grid on;
+YOplot = plot(N,YO1,'kREPLACE_WITH_DASH_DASH');
+YIplot = plot(N,YI1,'kREPLACE_WITH_DASH_DASH');
+Yplot = plot (N,Y, 'k-'); axis([0,360,0,inf]);
+set(YIplot, 'color', [0.5 0.5 0.5])
+set(Yplot,'LineWidth',1);
+set(YOplot, 'color', [0.5 0.5 0.5])
+set (gca, 'XTick', 0:45:360)
+box
+
+annotation('textbox',...
+    [0.03 0.75 0.5 0.15],...
+    'String',{'Tube notching template for:', ...
+    ['Uncut tube OD: ' num2str( DUin), unit],...
+    ['Cut Tube OD:   ' num2str( DOin), unit],...
+    ['Cut tube wall: ' num2str( THin), unit],...
+    ['Angle of fit:  ' num2str( AF),'°'],...
+    ['Created: ' datestr(now,'mm/dd/yyyy HH:MM AM\n')]}, ...
+    'FontSize',10,...
+    'FontName','Lucida Console',...
+    'EdgeColor','none',...
+    'BackgroundColor','none',...
+    'Color',[0 0 0]);
+
+hold off;
+
+set(gca, 'XTickLabel',[], 'YTickLabel',[], ...
+    'Units','normalized', 'Position',[0 0 1 1])
+
+% units are in inches
+xSize = DO*pi;             % figure size on paper (width)
+ySize = max(Y);            % figure size on paper (height)
+xMargin = .25;             % left/right margins from page borders
+yMargin = .25;             % top/bottom margins from page borders
+x = xSize + 2*xMargin;     % paper size
+y = ySize + 2*yMargin;     % paper size
+
+% set figure size and aspect ratio displayed on screen
+set(hFig, 'Units','inches', 'Position',[0 0 xSize ySize])
+movegui(hFig, 'center')
+
+if  get(handles.top,'Value') == 1
+    WinOnTop(hFig);
+else
+    WinOnTop(hFig, false);
+end
+
+end
+
+
+%% Saving Template as Accurately Scaled PDF
+% The following code plots the cut path and prints it to a PDF that is
+% scaled so that if it is wrapped around a tube it will provide a very
+% accurate template for use with the line scanning function on the 
+% Tracing Plasma Tubing Notcher.  The templates can also be used for hand
+% notching.
+
+
+function save_temp_Callback(hObject, eventdata, handles)
+
+existingFig = findobj(0,'Name', 'Notching Template Preview');
+close(existingFig);  % Closes any preexisting template
+
+% Gets the data needed to generate template
+YO1 = handles.YO1;
+YI1 = handles.YI1;
+N = handles.N;
+Y = handles.Y;
+DU = handles.DU;
+DO = handles.DO;
+AF = str2double(get(handles.AF,'String'));
+TH = handles.TH;
+unit1 = get(handles.unit, 'String');
+unit = unit1{:};
+DUin = str2double(get(handles.DUin, 'String'));
+DOin = str2double(get(handles.DOin, 'String'));
+THin = str2double(get(handles.THin, 'String'));
+
+
+% plot Y, YO1 and YI1 as functions of angular rotation
+
+hFig = figure;
+set(hFig ,'visible','off')
+set(hFig, 'Menubar','none');
+set(hFig ,'name','Template','numbertitle','off')
+hold on;
+grid on
+YOplot = plot(N,YO1,'kREPLACE_WITH_DASH_DASH');
+YIplot = plot(N,YI1,'kREPLACE_WITH_DASH_DASH');
+Yplot = plot (N,Y, 'k-'); axis([0,360,0,inf]);
+set(YIplot, 'color', [0.5 0.5 0.5])
+set(Yplot,'LineWidth',1);
+set(YOplot, 'color', [0.5 0.5 0.5])
+set (gca, 'XTick', 0:45:360)
+box
+
+% Prints template information to figure
+annotation('textbox',...
+    [0.03 0.75 0.5 0.15],...
+    'String',{'Tube notching template for:', ...
+    ['Uncut tube OD: ' num2str( DUin), unit],...
+    ['Cut Tube OD:   ' num2str( DOin), unit],...
+    ['Cut tube wall: ' num2str( THin), unit],...
+    ['Angle of fit:  ' num2str( AF),'°'],...
+    ['Created: ' datestr(now,'mm/dd/yyyy HH:MM AM\n')]}, ...
+    'FontSize',10,...
+    'FontName','Lucida Console',...
+    'EdgeColor','none',...
+    'BackgroundColor','none',...
+    'Color',[0 0 0]);
+
+hold off;
+set(gca, 'XTickLabel',[], 'YTickLabel',[], ...
+    'Units','normalized', 'Position',[0 0 1 1])
+
+% units are in inches
+xSize = DO*pi;             % figure size on paper (width)
+ySize = max(Y);            % figure size on paper (height)
+xMargin = .25;             % left/right margins from page borders
+yMargin = .25;             % top/bottom margins from page borders
+x = xSize + 2*xMargin;     % paper size
+y = ySize + 2*yMargin;     % paper size
+
+% set figure size and aspect ratio displayed on screen
+set(hFig, 'Units','inches', 'Position',[0 0 xSize ySize])
+movegui(hFig, 'center')
+
+% scale figure size for printing as template
+set(hFig, 'PaperUnits','inches')
+set(hFig, 'PaperSize',[x y])
+set(hFig, 'PaperPosition',[xMargin yMargin xSize ySize])
+set(hFig, 'PaperOrientation','portrait')
+
+% export template to PDF
+
+[file,path] = uiputfile('*.pdf','Save Template');
+
+if isequal(file,0);
+    return
+else
+    print(hFig,'-dpdf', fullfile(path, file));
+end
+
+if  get(handles.open_temp,'Value') == 1  % Opens template PDF if user
+    winopen(fullfile(path, file));       % selected checkbox to do so
+end
+
+end
+
+%% Keeping the Window on Top
+% Since *Tube Notch* will be used extensively with MACH3 motion control 
+% software, it is highly desirable that the GUI window remain on top even
+% if it does not have focus.  By default *Tube Notch* uses WinOnTop to manipulate 
+% the window's Java script so that the GUI window stays on top.  The user
+% can return to normal window behavior by unchecking the "Stay on Top" checkbox.
+
+
+function top_Callback(hObject, eventdata, handles)
+
+if  get(handles.top,'Value') == 1
+    WinOnTop(gcf);
+else
+    WinOnTop(gcf, false);
+end
+
+end
+
+
+%% About and Help windows
+
+% Executes on button press in help.
+function help_Callback(hObject, eventdata, handles)
+
+existingFig = findobj(0,'Name', 'Tube Notch Help');
+close(existingFig);
+helpFig = figure;
+set(helpFig ,'visible','on')
+set(helpFig, 'Menubar','none');
+set(helpFig ,'name','Tube Notch Help','numbertitle','off')
+set(helpFig, 'resize', 'off');
+imshow('Help.jpg','Border','tight')
+
+if  get(handles.top,'Value') == 1
+    WinOnTop(helpFig);
+else
+    WinOnTop(helpFig, false);
+end
+
+end
+
+
+% Executes on button press in about.
+function about_Callback(hObject, eventdata, handles)
+
+existingFig = findobj(0,'Name', 'About Tube Notch');
+close(existingFig);
+aboutFig = figure;
+set(aboutFig ,'visible','on')
+set(aboutFig, 'Menubar','none');
+set(aboutFig ,'name','About Tube Notch','numbertitle','off')
+set(aboutFig, 'resize', 'off');
+imshow('About.jpg','Border','tight')
+
+if  get(handles.top,'Value') == 1
+    WinOnTop(aboutFig);
+else
+    WinOnTop(aboutFig, false);
+end
+
+end
+
+
+%% Input Unit System Selection
+% *Tube Notch* allows the user to enter the joint parameters in either US or SI units.
+% Values in the input boxes will be converted from US to SI or
+% vice versa depending on the state of the radio buttons. Output G-code
+% will be in US customary units regardless of the input unit system.
+
+
+function US_Callback(hObject, eventdata, handles)
+
+if get(handles.US,'Value') == 1
+    set(handles.unit,'String','in')
+    
+    DU = str2double(get(handles.DUin,'String'))/25.4;
+    DO = str2double(get(handles.DOin,'String'))/25.4;
+    TH = str2double(get(handles.THin,'String'))/25.4;
+    
+    set(handles.DUin,'String', num2str(DU));
+    set(handles.DOin,'String', num2str(DO));
+    set(handles.THin,'String', num2str(TH));
+    
+    calc_Callback(handles.calc, eventdata,handles);
+    
+end
+
+end
+
+
+% REPLACE_WITH_DASH_DASH- Executes on button press in SI.
+function SI_Callback(hObject, eventdata, handles)
+
+if get(handles.SI,'Value')==1
+    set(handles.unit,'String','mm')
+    
+    % Gets current *in* value and converts to *mm*
+    DU = str2double(get(handles.DUin,'String'))*25.4;
+    DO = str2double(get(handles.DOin,'String'))*25.4;
+    TH = str2double(get(handles.THin,'String'))*25.4;
+    
+    % Replaces values in edit boxes with converted values
+    set(handles.DUin,'String', num2str(DU));
+    set(handles.DOin,'String', num2str(DO));
+    set(handles.THin,'String', num2str(TH));
+    
+    calc_Callback(handles.calc, eventdata,handles);
+end
+
+end
+
+
+
+%% Miscellaneous Functions and Callbacks
+
+% Executes on button press in open_code.
+function open_code_Callback(hObject, eventdata, handles)
+
+end
+
+% Executes on button press in open_temp.
+function open_temp_Callback(hObject, eventdata, handles)
+
+end
+
+% Executes during object creation, after setting all properties.
+function code_disp_CreateFcn(hObject, eventdata, handles)
+
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+end
+
+% Executes on selection change in code_disp.
+function code_disp_Callback(hObject, eventdata, handles)
+
+end
+
+% Executes during object creation, after setting all properties.
+function error_CreateFcn(hObject, eventdata, handles)
+
+end
+
+##### SOURCE END #####
+--></body></html>
